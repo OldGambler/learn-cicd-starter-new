@@ -1,4 +1,3 @@
 #!/bin/bash
 echo "Building for production"
-go build -o app
-
+go build -o app ./cmd/...

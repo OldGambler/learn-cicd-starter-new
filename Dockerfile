@@ -1,9 +1,7 @@
-FROM golang:1.19 as builder
-WORKDIR /app
-COPY . .
-RUN go build -o app cmd/main.go
+FROM --platform=linux/amd64 debian:stable-slim
 
-FROM alpine:latest
-WORKDIR /app
-COPY --from=builder /app/app .
-CMD ["./app"]
+RUN apt-get update && apt-get install -y ca-certificates
+
+ADD notely /usr/bin/notely
+
+CMD ["notely"]

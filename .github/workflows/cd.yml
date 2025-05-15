@@ -25,11 +25,16 @@ jobs:
       - name: Build app
         run: ./scripts/buildprod.sh || echo "Build failed"
 
-      # Authenticate to Google Cloud using setup-gcloud
+      # First authenticate with the auth action
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      # Then set up the gcloud CLI
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v1"
-        with:
-          service_account_key: "${{ secrets.GCP_CREDENTIALS }}"
 
       # Build and push Docker image
       - name: "Build and push Docker image"

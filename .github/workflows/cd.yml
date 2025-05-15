@@ -9,7 +9,6 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
-    # Add permissions for the job
     permissions:
       contents: "read"
       id-token: "write"
@@ -26,16 +25,11 @@ jobs:
       - name: Build app
         run: ./scripts/buildprod.sh
 
-      # Authenticate to Google Cloud (use only this method)
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
-        with:
-          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
-
-      # Setup gcloud CLI (removed redundant authentication)
+      # Authenticate to Google Cloud using setup-gcloud
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v1"
+        with:
+          service_account_key: "${{ secrets.GCP_CREDENTIALS }}"
 
       # Build and push Docker image
       - name: "Build and push Docker image"

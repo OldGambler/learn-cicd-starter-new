@@ -13,6 +13,9 @@ jobs:
       contents: "read"
       id-token: "write"
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -21,6 +24,11 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.22.2"
+
+      - name: Set up goose
+        uses: github.com/pressly/goose/v3/cmd/goose@latest
+        with:
+          goose-verion: "v3.18.0"
 
       # First authenticate with the auth action
       - id: "auth"
@@ -39,6 +47,9 @@ jobs:
       # Build and push Docker image
       - name: "Build and push Docker image"
         run: "gcloud builds submit --project notely-461222 --tag us-central1-docker.pkg.dev/notely-461222/notely-ar-repo/notely-app:latest ."
+
+      - name: "run migrations"
+        run: "./scripts/migrateup.sh"
 
       - name: Deploy to Cloud Run
         run: gcloud run deploy notely --image us-central1-docker.pkg.dev/notely-461222/notely-ar-repo/notely-app:latest --region us-central1 --allow-unauthenticated --project notely-461222 --max-instances=4
